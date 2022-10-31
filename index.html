@@ -98,16 +98,15 @@
       const peopleList = urlParams?.getAll("people")[0]?.split(",");
       const defaultPeopleList = [
         "pal",
-        "fran",
         "patrik",
         "miles",
         "michael",
         "alican",
-        "chris",
         "fiona",
         "tom",
         "joe",
-        "marco"
+        "marco",
+        "jonathan"
       ];
       const names = shuffle(
         peopleList?.length > 0 ? peopleList : defaultPeopleList
