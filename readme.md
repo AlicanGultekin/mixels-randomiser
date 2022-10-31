@@ -1,0 +1,2 @@
+Fork of Alex's randomiser that works with query strings rather than client side hash
+There's a default people list when you open the page, or you can pass your own list by adding a query param `?people=a,b,c`
