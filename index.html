@@ -1,223 +1,223 @@
 <!DOCTYPE html>
 <!-- saved from url=(0054)http://mixels-test.s3-website.eu-west-2.amazonaws.com/ -->
 <html lang="en">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com/" />
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link href="./styles.css" rel="stylesheet" />
-    <style>
-      body,
-      html {
-        margin: 0;
-        margin-top: 10px;
-        padding: 0;
-        height: 100vh;
-        width: 100vw;
-        display: flex;
-        justify-content: center;
-        font-family: "Ubuntu", sans-serif;
-      }
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com/" />
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link href="./styles.css" rel="stylesheet" />
+  <style>
+    body,
+    html {
+      margin: 0;
+      margin-top: 10px;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      font-family: "Ubuntu", sans-serif;
+    }
+
+    h1 {
+      font-size: calc(1.2vw + 1.2vh);
+      border-bottom: 2px solid;
+      padding: 0.1em;
+      box-sizing: content-box;
+    }
+
+    .container {
+      margin: auto;
+      width: 25%;
+      height: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: black;
+      box-sizing: content-box;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    @media (max-width: 900px) {
       h1 {
-        font-size: calc(1.2vw + 1.2vh);
+        font-size: calc(1.5vw + 1.5vh);
         border-bottom: 2px solid;
-        padding: 0.1em;
+        padding: 0.2em;
         box-sizing: content-box;
       }
+    }
 
-      .container {
-        margin: auto;
-        width: 25%;
-        height: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: black;
+    @media (max-width: 768px) {
+      h1 {
+        font-size: calc(1.8vw + 1.8vh);
+        border-bottom: 2px solid;
+        padding: 0.2em;
         box-sizing: content-box;
       }
+    }
+  </style>
+</head>
 
-      canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: -1;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
+<body onresize="scaleBricks()">
+  <canvas id="canvas" width="1920" height="908"></canvas>
+  <div class="container"></div>
+  <script>
+    const container = document.querySelector(".container");
+
+    function shuffle(array) {
+      var currentIndex = array.length,
+        randomIndex;
+
+      while (0 !== currentIndex) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex],
+          array[currentIndex],
+        ];
       }
 
-      @media (max-width: 900px) {
-        h1 {
-          font-size: calc(1.5vw + 1.5vh);
-          border-bottom: 2px solid;
-          padding: 0.2em;
-          box-sizing: content-box;
-        }
-      }
+      return array;
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const peopleList = urlParams?.getAll("people")[0]?.split(",");
+    const defaultPeopleList = [
+      "ana",
+      "miles",
+      "michael",
+      "alican",
+      "fiona",
+      "tom",
+      "marco",
+      "dan",
+      "mihaela",
+    ];
+    const names = shuffle(
+      peopleList?.length > 0 ? peopleList : defaultPeopleList
+    );
 
-      @media (max-width: 768px) {
-        h1 {
-          font-size: calc(1.8vw + 1.8vh);
-          border-bottom: 2px solid;
-          padding: 0.2em;
-          box-sizing: content-box;
-        }
-      }
-    </style>
-  </head>
+    names.forEach((name) => {
+      const el = document.createElement("h1");
+      const node = document.createTextNode(name);
+      el.appendChild(node);
+      container.appendChild(el);
+    });
+  </script>
+  <script>
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    var canvas = document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    var rate = 50;
+    var numParticles = 50;
+    var particles = [];
+    var time,
+      count,
+      size = 2,
+      speed = 10,
+      lights = new Array(),
+      colors = ["#000"];
 
-  <body onresize="scaleBricks()">
-    <canvas id="canvas" width="1920" height="908"></canvas>
-    <div class="container"></div>
-    <script>
-      const container = document.querySelector(".container");
+    var redBrick = new Image();
+    redBrick.src = "./red_brick.png";
+    var blueBrick = new Image();
+    blueBrick.src = "blue_brick.png";
 
-      function shuffle(array) {
-        var currentIndex = array.length,
-          randomIndex;
+    var images = [redBrick, blueBrick];
 
-        while (0 !== currentIndex) {
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
+    canvas.setAttribute("width", w);
+    canvas.setAttribute("height", h);
 
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex],
-            array[currentIndex],
-          ];
-        }
-
-        return array;
-      }
-      const urlParams = new URLSearchParams(window.location.search);
-      const peopleList = urlParams?.getAll("people")[0]?.split(",");
-      const defaultPeopleList = [
-        "ana",
-        "miles",
-        "michael",
-        "alican",
-        "fiona",
-        "tom",
-        "joe",
-        "marco",
-        "dan",
-        "mihaela",
-        "chris"
-      ];
-      const names = shuffle(
-        peopleList?.length > 0 ? peopleList : defaultPeopleList
+    const loadImages = (images) => {
+      return Promise.all(
+        images.map((image) => {
+          return new Promise((resolve, reject) => {
+            image.onload = () => {
+              resolve();
+            };
+            image.onerror = (error) => {
+              reject(error);
+            };
+          });
+        })
       );
+    };
 
-      names.forEach((name) => {
-        const el = document.createElement("h1");
-        const node = document.createTextNode(name);
-        el.appendChild(node);
-        container.appendChild(el);
+    for (var i = 0; i < numParticles; i++) {
+      particles.push(new createParticle());
+    }
+
+    function resetParticles() {
+      particles.forEach((particle) => {
+        particle.height = 30 * (w / h);
+        particle.width = particle.height;
+        particle.x = Math.random() * w * 0.95;
+        particle.y = Math.random() * h * 0.95;
       });
-    </script>
-    <script>
-      var w = window.innerWidth;
-      var h = window.innerHeight;
-      var canvas = document.getElementById("canvas");
-      var context = canvas.getContext("2d");
-      var rate = 50;
-      var numParticles = 50;
-      var particles = [];
-      var time,
-        count,
-        size = 2,
-        speed = 10,
-        lights = new Array(),
-        colors = ["#000"];
+    }
 
-      var redBrick = new Image();
-      redBrick.src = "./red_brick.png";
-      var blueBrick = new Image();
-      blueBrick.src = "blue_brick.png";
-
-      var images = [redBrick, blueBrick];
-
+    function scaleBricks() {
+      w = window.innerWidth;
+      h = window.innerHeight;
       canvas.setAttribute("width", w);
       canvas.setAttribute("height", h);
+      resetParticles();
+    }
 
-      const loadImages = (images) => {
-        return Promise.all(
-          images.map((image) => {
-            return new Promise((resolve, reject) => {
-              image.onload = () => {
-                resolve();
-              };
-              image.onerror = (error) => {
-                reject(error);
-              };
-            });
-          })
-        );
-      };
+    function createParticle() {
+      var randomNum = Math.floor(Math.random() * 2);
+      this.image = images[randomNum];
+      this.x = Math.random() * w * 0.95;
+      this.y = Math.random() * h * 0.95;
+      this.height = 30 * (canvas.width / canvas.height);
+      this.width = this.height;
+      this.velocityX = Math.random() * 3 - 1;
+      this.velocityY = Math.random() * 3 - 1;
+    }
 
-      for (var i = 0; i < numParticles; i++) {
-        particles.push(new createParticle());
-      }
+    function drawParticle(particle) {
+      this.context.drawImage(
+        particle.image,
+        particle.x,
+        particle.y,
+        particle.width,
+        particle.height
+      );
+    }
 
-      function resetParticles() {
-        particles.forEach((particle) => {
-          particle.height = 30 * (w / h);
-          particle.width = particle.height;
-          particle.x = Math.random() * w * 0.95;
-          particle.y = Math.random() * h * 0.95;
-        });
-      }
+    function draw() {
+      context.clearRect(0, 0, w, h);
 
-      function scaleBricks() {
-        w = window.innerWidth;
-        h = window.innerHeight;
-        canvas.setAttribute("width", w);
-        canvas.setAttribute("height", h);
-        resetParticles();
-      }
+      particles.forEach((particle) => {
+        drawParticle(particle);
+        particle.x += particle.velocityX;
+        particle.y += particle.velocityY;
 
-      function createParticle() {
-        var randomNum = Math.floor(Math.random() * 2);
-        this.image = images[randomNum];
-        this.x = Math.random() * w * 0.95;
-        this.y = Math.random() * h * 0.95;
-        this.height = 30 * (canvas.width / canvas.height);
-        this.width = this.height;
-        this.velocityX = Math.random() * 3 - 1;
-        this.velocityY = Math.random() * 3 - 1;
-      }
+        if (particle.x + particle.width >= w || particle.x <= 0)
+          particle.velocityX = -particle.velocityX;
 
-      function drawParticle(particle) {
-        this.context.drawImage(
-          particle.image,
-          particle.x,
-          particle.y,
-          particle.width,
-          particle.height
-        );
-      }
+        if (particle.y + particle.height >= h || particle.y <= 0)
+          particle.velocityY = -particle.velocityY;
+      });
+    }
+    loadImages(images).then(() => setInterval(draw, 15));
+  </script>
+</body>
 
-      function draw() {
-        context.clearRect(0, 0, w, h);
-
-        particles.forEach((particle) => {
-          drawParticle(particle);
-          particle.x += particle.velocityX;
-          particle.y += particle.velocityY;
-
-          if (particle.x + particle.width >= w || particle.x <= 0)
-            particle.velocityX = -particle.velocityX;
-
-          if (particle.y + particle.height >= h || particle.y <= 0)
-            particle.velocityY = -particle.velocityY;
-        });
-      }
-      loadImages(images).then(() => setInterval(draw, 15));
-    </script>
-  </body>
 </html>
